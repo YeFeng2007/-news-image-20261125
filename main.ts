@@ -34,5 +34,15 @@ if (written !== bytes.length) {
   throw new Error(`short write: ${written} of ${bytes.length} bytes`);
 }
 
+const writtenBytes = readFileSync(outPath);
+const writtenHash = createHash("sha256").update(writtenBytes).digest("hex");
+const sourceHash = createHash("sha256").update(bytes).digest("hex");
+if (writtenHash !== sourceHash) {
+  throw new Error(
+    `copy verification failed: output sha256 ${writtenHash} != source sha256 ${sourceHash}`,
+  );
+}
+
 console.log(`wrote ${written} bytes to ${outPath}`);
-console.log(`sha256 ${createHash("sha256").update(bytes).digest("hex")}`);
+console.log(`sha256 ${sourceHash}`);
+console.log(`copy verified: output sha256 matches source sha256 ${sourceHash}`);
